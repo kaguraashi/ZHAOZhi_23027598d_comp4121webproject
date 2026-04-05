@@ -1,0 +1,135 @@
+[
+  {
+    "slug": "soy-chicken-rice",
+    "name": "Soy Sauce Chicken Rice",
+    "nameChinese": "豉油雞飯",
+    "category": "Rice Plates",
+    "basePrice": 48,
+    "imageUrl": "https://images.unsplash.com/photo-1569058242567-93de6f36f8eb?auto=format&fit=crop&w=1200&q=80",
+    "description": "Tender soy-braised chicken thigh over fragrant rice.",
+    "cookMinutes": 12,
+    "customizationSchema": {
+      "singleChoice": [
+        {"key": "riceSize", "label": "Rice Size", "required": true, "options": [{"code": "regular-rice", "label": "Regular", "price": 0}, {"code": "large-rice", "label": "Large", "price": 6}]},
+        {"key": "sauce", "label": "Sauce", "required": true, "options": [{"code": "soy-gravy", "label": "Soy Gravy", "price": 0}, {"code": "ginger-scallion", "label": "Ginger Scallion", "price": 4}]},
+        {"key": "spice", "label": "Spice Level", "required": true, "options": [{"code": "none", "label": "None", "price": 0}, {"code": "mild", "label": "Mild", "price": 0}, {"code": "hot", "label": "Hot", "price": 0}]}
+      ],
+      "multiChoice": [
+        {"key": "extras", "label": "Extras", "options": [{"code": "fried-egg", "label": "Fried Egg", "price": 8}, {"code": "bok-choy", "label": "Bok Choy", "price": 6}, {"code": "tofu-skin", "label": "Tofu Skin", "price": 7}]}
+      ]
+    }
+  },
+  {
+    "slug": "char-siu-rice",
+    "name": "Char Siu Rice",
+    "nameChinese": "叉燒飯",
+    "category": "Rice Plates",
+    "basePrice": 46,
+    "imageUrl": "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?auto=format&fit=crop&w=1200&q=80",
+    "description": "Honey-glazed BBQ pork with steamed jasmine rice.",
+    "cookMinutes": 10,
+    "customizationSchema": {
+      "singleChoice": [
+        {"key": "riceSize", "label": "Rice Size", "required": true, "options": [{"code": "regular-rice", "label": "Regular", "price": 0}, {"code": "large-rice", "label": "Large", "price": 6}]},
+        {"key": "sauce", "label": "Sauce", "required": true, "options": [{"code": "char-siu-sauce", "label": "Char Siu Sauce", "price": 0}, {"code": "spicy-garlic", "label": "Spicy Garlic", "price": 4}]}
+      ],
+      "multiChoice": [
+        {"key": "extras", "label": "Extras", "options": [{"code": "pickled-cucumber", "label": "Pickled Cucumber", "price": 5}, {"code": "broccoli", "label": "Broccoli", "price": 6}, {"code": "soft-boiled-egg", "label": "Soft-Boiled Egg", "price": 8}]}
+      ]
+    }
+  },
+  {
+    "slug": "beef-brisket-noodle",
+    "name": "Beef Brisket Noodle",
+    "nameChinese": "牛腩麵",
+    "category": "Noodles",
+    "basePrice": 52,
+    "imageUrl": "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=1200&q=80",
+    "description": "Rich beef brisket broth with springy noodles.",
+    "cookMinutes": 11,
+    "customizationSchema": {
+      "singleChoice": [
+        {"key": "noodleType", "label": "Noodle Type", "required": true, "options": [{"code": "egg-noodle", "label": "Egg Noodle", "price": 0}, {"code": "rice-noodle", "label": "Rice Noodle", "price": 0}, {"code": "udon", "label": "Udon", "price": 5}]},
+        {"key": "spice", "label": "Spice Level", "required": true, "options": [{"code": "none", "label": "None", "price": 0}, {"code": "mild", "label": "Mild", "price": 0}, {"code": "hot", "label": "Hot", "price": 0}]}
+      ],
+      "multiChoice": [
+        {"key": "extras", "label": "Extras", "options": [{"code": "daikon", "label": "Daikon", "price": 6}, {"code": "chili-oil", "label": "Chili Oil", "price": 4}, {"code": "extra-beef", "label": "Extra Beef", "price": 16}]}
+      ]
+    }
+  },
+  {
+    "slug": "wonton-noodle-soup",
+    "name": "Wonton Noodle Soup",
+    "nameChinese": "雲吞麵",
+    "category": "Noodles",
+    "basePrice": 49,
+    "imageUrl": "https://images.unsplash.com/photo-1569718212165-3a8278d5f624?auto=format&fit=crop&w=1200&q=80",
+    "description": "Classic HK wontons in a clear seafood broth.",
+    "cookMinutes": 8,
+    "customizationSchema": {
+      "singleChoice": [
+        {"key": "noodleType", "label": "Noodle Type", "required": true, "options": [{"code": "egg-noodle", "label": "Egg Noodle", "price": 0}, {"code": "lai-fun", "label": "Lai Fun", "price": 3}]},
+        {"key": "spice", "label": "Spice Level", "required": true, "options": [{"code": "none", "label": "None", "price": 0}, {"code": "mild", "label": "Mild", "price": 0}]}
+      ],
+      "multiChoice": [
+        {"key": "extras", "label": "Extras", "options": [{"code": "extra-wonton", "label": "Extra Wonton", "price": 15}, {"code": "bok-choy", "label": "Bok Choy", "price": 6}, {"code": "scallion", "label": "Scallion", "price": 3}]}
+      ]
+    }
+  },
+  {
+    "slug": "century-egg-congee",
+    "name": "Century Egg & Lean Pork Congee",
+    "nameChinese": "皮蛋瘦肉粥",
+    "category": "Congee",
+    "basePrice": 45,
+    "imageUrl": "https://images.unsplash.com/photo-1541696490-8744a5dc0228?auto=format&fit=crop&w=1200&q=80",
+    "description": "Comfort congee with century egg and lean pork.",
+    "cookMinutes": 15,
+    "customizationSchema": {
+      "singleChoice": [
+        {"key": "portion", "label": "Portion", "required": true, "options": [{"code": "regular", "label": "Regular", "price": 0}, {"code": "large", "label": "Large", "price": 7}]}
+      ],
+      "multiChoice": [
+        {"key": "extras", "label": "Extras", "options": [{"code": "fried-dough", "label": "Youtiao", "price": 6}, {"code": "ginger", "label": "Fresh Ginger", "price": 3}, {"code": "extra-pork", "label": "Extra Pork", "price": 12}]}
+      ]
+    }
+  },
+  {
+    "slug": "milk-tea",
+    "name": "Hong Kong Milk Tea",
+    "nameChinese": "港式奶茶",
+    "category": "Drinks",
+    "basePrice": 18,
+    "imageUrl": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=1200&q=80",
+    "description": "Strong silky milk tea, hot or cold.",
+    "cookMinutes": 3,
+    "customizationSchema": {
+      "singleChoice": [
+        {"key": "temperature", "label": "Temperature", "required": true, "options": [{"code": "hot", "label": "Hot", "price": 0}, {"code": "cold", "label": "Cold", "price": 2}]},
+        {"key": "sweetness", "label": "Sweetness", "required": true, "options": [{"code": "regular", "label": "Regular", "price": 0}, {"code": "less-sugar", "label": "Less Sugar", "price": 0}, {"code": "no-sugar", "label": "No Sugar", "price": 0}]}
+      ],
+      "multiChoice": []
+    }
+  },
+  {
+    "slug": "build-your-own-bowl",
+    "name": "Build Your Own Bowl",
+    "nameChinese": "自選飯盒",
+    "category": "Signature Builder",
+    "basePrice": 38,
+    "imageUrl": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
+    "description": "Pick your base, protein, sides, sauce, and spice level.",
+    "cookMinutes": 14,
+    "customizationSchema": {
+      "singleChoice": [
+        {"key": "base", "label": "Base", "required": true, "options": [{"code": "rice", "label": "Rice", "price": 0}, {"code": "noodle", "label": "Noodle", "price": 4}, {"code": "salad", "label": "Salad", "price": 5}]},
+        {"key": "protein", "label": "Protein", "required": true, "options": [{"code": "chicken", "label": "Chicken", "price": 12}, {"code": "beef", "label": "Beef", "price": 16}, {"code": "tofu", "label": "Tofu", "price": 8}]},
+        {"key": "sauce", "label": "Sauce", "required": true, "options": [{"code": "ginger-scallion", "label": "Ginger Scallion", "price": 0}, {"code": "black-pepper", "label": "Black Pepper", "price": 0}, {"code": "satay", "label": "Satay", "price": 2}]},
+        {"key": "spice", "label": "Spice Level", "required": true, "options": [{"code": "none", "label": "None", "price": 0}, {"code": "mild", "label": "Mild", "price": 0}, {"code": "medium", "label": "Medium", "price": 0}, {"code": "hot", "label": "Hot", "price": 0}]}
+      ],
+      "multiChoice": [
+        {"key": "sides", "label": "Sides", "options": [{"code": "fried-egg", "label": "Fried Egg", "price": 8}, {"code": "broccoli", "label": "Broccoli", "price": 6}, {"code": "corn", "label": "Corn", "price": 5}, {"code": "mushroom", "label": "Mushroom", "price": 7}]}
+      ]
+    }
+  }
+]
