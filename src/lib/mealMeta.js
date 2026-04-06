@@ -296,7 +296,9 @@ export function estimateCustomizationNutrition(item, customization) {
     ? { ...emptyNutrition }
     : cloneNutrition(getDishMeta(item).nutrition);
 
-  const schema = item.customization_schema || item.customizationSchema || {};
+  const schema = isBuilderItem(item)
+    ? builderSchema
+    : (item.customization_schema || item.customizationSchema || {});
   const optionQuantities = customization?.optionQuantities || {};
   const addonQuantities = customization?.addonQuantities || {};
 

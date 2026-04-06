@@ -20,6 +20,22 @@ function SoonTag() {
 export default function ProfilePage({ orders, savedPresets, onUsePreset }) {
   const { user, signOut } = useAuth();
   const settings = readSettings() || {};
+
+  if (!user) {
+    return (
+      <div className="page-shell shell gated-page">
+        <section className="card gated-card">
+          <p className="eyebrow">Profile</p>
+          <h1>Sign in to see saved meals, coins, and order details.</h1>
+          <p className="muted">You can still browse the menu as a guest.</p>
+          <div className="gated-actions">
+            <Link className="primary-btn" to="/auth">Sign in</Link>
+            <Link className="ghost-btn" to="/">Back to menu</Link>
+          </div>
+        </section>
+      </div>
+    );
+  }
   const completedOrders = (orders || []).filter((o) => o.status === 'delivered').length;
   const totalSpent = (orders || [])
     .filter((o) => o.status === 'delivered')

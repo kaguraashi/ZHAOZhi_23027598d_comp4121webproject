@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export const STORAGE_KEY = 'dishy-settings-draft';
@@ -45,7 +45,21 @@ export default function SettingsPage() {
     } catch {}
   }, []);
 
-  if (!user) return <Navigate to="/auth" replace />;
+  if (!user) {
+    return (
+      <div className="page-shell shell gated-page">
+        <section className="card gated-card">
+          <p className="eyebrow">Settings</p>
+          <h1>Sign in to manage delivery, health, and account preferences.</h1>
+          <p className="muted">You can keep browsing as a guest and sign in later.</p>
+          <div className="gated-actions">
+            <Link className="primary-btn" to="/auth">Sign in</Link>
+            <Link className="ghost-btn" to="/">Back to menu</Link>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   function updateField(key, value) {
     setForm((current) => ({ ...current, [key]: value }));

@@ -1,6 +1,9 @@
-import { allowCors, sendJson } from './_lib/http.js';
-
 export default async function handler(req, res) {
-  if (allowCors(req, res)) return;
-  return sendJson(res, 501, { error: 'Merchant sign in is being prepared.' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+  return res.status(501).json({
+    error: 'Merchant sign in is opening soon.',
+    message: 'Merchant sign in is opening soon. Please contact support if you want early access.',
+  });
 }

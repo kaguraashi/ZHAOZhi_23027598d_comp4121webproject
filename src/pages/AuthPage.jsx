@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 export default function AuthPage() {
+  const navigate = useNavigate();
   const { user, signIn, signUp, hasSupabaseEnv, error: authError } = useAuth();
   const [mode, setMode] = useState('login');
   const [form, setForm] = useState({ fullName: '', email: '', password: '' });
@@ -26,7 +27,7 @@ export default function AuthPage() {
         setMode('login');
       }
     } catch (submitError) {
-      setError(submitError.message);
+      setError(submitError.message || 'Could not continue.');
     } finally {
       setLoading(false);
     }
@@ -36,11 +37,11 @@ export default function AuthPage() {
     <div className="page-shell shell auth-layout-web">
       <section className="card auth-promo">
         <p className="eyebrow">HK Home Dishes</p>
-        <h1>Order your meal, save your favourites, and track each order.</h1>
+        <h1>Sign in when you want to save meals, earn coins, and track orders.</h1>
         <ul className="auth-promo__list">
-          <li>Browse first, then sign in when you are ready.</li>
-          <li>Your orders and coins stay with your account.</li>
-          <li>Shops can use a separate merchant sign in.</li>
+          <li>Browse the menu first.</li>
+          <li>Save your custom meals after sign in.</li>
+          <li>Merchant tools are opening soon.</li>
         </ul>
       </section>
 
@@ -72,10 +73,11 @@ export default function AuthPage() {
           <button className="primary-btn" disabled={loading || !hasSupabaseEnv}>{loading ? 'Please wait' : mode === 'login' ? 'Sign in' : 'Sign up'}</button>
         </form>
 
-        <div className="auth-card__actions">
+        <div className="auth-card__actions auth-card__actions--stack">
           <button className="ghost-btn auth-toggle" onClick={() => setMode((current) => (current === 'login' ? 'signup' : 'login'))}>
             {mode === 'login' ? 'Need an account? Sign up' : 'Already have an account? Sign in'}
           </button>
+          <button className="ghost-btn auth-toggle" type="button" onClick={() => navigate('/')}>Continue as guest</button>
           <Link className="ghost-btn auth-toggle" to="/merchant-login">Merchant sign in</Link>
         </div>
       </section>
