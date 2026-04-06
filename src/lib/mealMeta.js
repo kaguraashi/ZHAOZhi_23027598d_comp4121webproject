@@ -39,7 +39,7 @@ export const dishMeta = {
     kitchen: 'Fit Bowl Lab',
     goals: ['High protein', 'Lighter meals', 'Office lunch'],
     mealTimes: ['breakfast', 'lunch', 'dinner', 'supper'],
-    nutrition: { calories: 430, protein: 28, carbs: 38, fat: 12 },
+    nutrition: { calories: 0, protein: 0, carbs: 0, fat: 0 },
   },
 };
 
@@ -47,24 +47,35 @@ export const goalOptions = ['All goals', 'High protein', 'Lighter meals', 'Offic
 export const kitchenOptions = ['All kitchens', 'HK Home Dishes', 'Morning Kitchen', 'Central Noodle House', 'Fit Bowl Lab'];
 
 const optionNutrition = {
-  'rice-base': { calories: 240, protein: 4, carbs: 53, fat: 1 },
-  'noodle-base': { calories: 210, protein: 7, carbs: 42, fat: 3 },
-  'salad-base': { calories: 60, protein: 3, carbs: 8, fat: 2 },
-  'chicken-protein': { calories: 180, protein: 28, carbs: 0, fat: 7 },
-  'beef-protein': { calories: 220, protein: 24, carbs: 0, fat: 14 },
-  'tofu-protein': { calories: 140, protein: 13, carbs: 4, fat: 9 },
-  'soy-garlic': { calories: 35, protein: 1, carbs: 6, fat: 1 },
-  'sesame': { calories: 70, protein: 1, carbs: 4, fat: 6 },
+  rice: { calories: 240, protein: 4, carbs: 53, fat: 1 },
+  noodle: { calories: 210, protein: 7, carbs: 42, fat: 3 },
+  salad: { calories: 60, protein: 3, carbs: 8, fat: 2 },
+  chicken: { calories: 180, protein: 28, carbs: 0, fat: 7 },
+  beef: { calories: 220, protein: 24, carbs: 0, fat: 14 },
+  tofu: { calories: 140, protein: 13, carbs: 4, fat: 9 },
   'ginger-scallion': { calories: 45, protein: 1, carbs: 3, fat: 3 },
-  'none': { calories: 0, protein: 0, carbs: 0, fat: 0 },
+  'black-pepper': { calories: 28, protein: 0, carbs: 2, fat: 2 },
+  satay: { calories: 55, protein: 1, carbs: 4, fat: 4 },
+  none: { calories: 0, protein: 0, carbs: 0, fat: 0 },
   mild: { calories: 0, protein: 0, carbs: 0, fat: 0 },
+  medium: { calories: 1, protein: 0, carbs: 0, fat: 0 },
   hot: { calories: 2, protein: 0, carbs: 0, fat: 0 },
   'fried-egg': { calories: 90, protein: 6, carbs: 1, fat: 7 },
-  'bok-choy': { calories: 25, protein: 2, carbs: 4, fat: 0 },
-  'tofu-skin': { calories: 80, protein: 7, carbs: 3, fat: 4 },
   broccoli: { calories: 30, protein: 3, carbs: 5, fat: 0 },
+  corn: { calories: 55, protein: 2, carbs: 12, fat: 1 },
   mushroom: { calories: 20, protein: 2, carbs: 3, fat: 0 },
 };
+
+const emptyNutrition = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+
+function cloneNutrition(nutrition) {
+  return {
+    calories: nutrition?.calories || 0,
+    protein: nutrition?.protein || 0,
+    carbs: nutrition?.carbs || 0,
+    fat: nutrition?.fat || 0,
+  };
+}
 
 export function getDishMeta(item) {
   const key = item?.slug || item?.id || '';
@@ -72,7 +83,7 @@ export function getDishMeta(item) {
     kitchen: 'HK Home Dishes',
     goals: ['Balanced'],
     mealTimes: ['breakfast', 'lunch', 'dinner', 'supper'],
-    nutrition: { calories: 0, protein: 0, carbs: 0, fat: 0 },
+    nutrition: emptyNutrition,
   };
 }
 
@@ -92,7 +103,7 @@ export function matchesMealTime(item, mealTime) {
 }
 
 export function getNutritionSummary(item) {
-  return getDishMeta(item).nutrition;
+  return cloneNutrition(getDishMeta(item).nutrition);
 }
 
 export function formatNutritionLine(nutrition) {
@@ -100,8 +111,13 @@ export function formatNutritionLine(nutrition) {
 }
 
 export function estimateCustomizationNutrition(item, customization) {
-  if (!item) return { calories: 0, protein: 0, carbs: 0, fat: 0 };
-  const base = { ...getDishMeta(item).nutrition };
+  if (!item) return { ...emptyNutrition };
+
+  const key = item?.slug || item?.id || '';
+  const base = key === 'build-your-own-bowl'
+    ? { ...emptyNutrition }
+    : cloneNutrition(getDishMeta(item).nutrition);
+
   const schema = item.customization_schema || item.customizationSchema || {};
 
   for (const group of schema.singleChoice || []) {
@@ -134,20 +150,20 @@ export function estimateCustomizationNutrition(item, customization) {
 export function applyBuilderPreset(presetKey, currentCustomization) {
   const next = structuredClone(currentCustomization || { singleChoice: {}, multiChoice: {}, notes: '' });
   if (presetKey === 'Office lunch') {
-    next.singleChoice.base = 'rice-base';
-    next.singleChoice.protein = 'chicken-protein';
+    next.singleChoice.base = 'rice';
+    next.singleChoice.protein = 'chicken';
     next.singleChoice.sauce = 'ginger-scallion';
     next.singleChoice.spice = 'none';
     next.multiChoice.sides = ['broccoli'];
   } else if (presetKey === 'High protein') {
-    next.singleChoice.base = 'salad-base';
-    next.singleChoice.protein = 'chicken-protein';
-    next.singleChoice.sauce = 'soy-garlic';
+    next.singleChoice.base = 'salad';
+    next.singleChoice.protein = 'chicken';
+    next.singleChoice.sauce = 'black-pepper';
     next.singleChoice.spice = 'mild';
     next.multiChoice.sides = ['fried-egg', 'broccoli'];
   } else if (presetKey === 'Lighter') {
-    next.singleChoice.base = 'salad-base';
-    next.singleChoice.protein = 'tofu-protein';
+    next.singleChoice.base = 'salad';
+    next.singleChoice.protein = 'tofu';
     next.singleChoice.sauce = 'none';
     next.singleChoice.spice = 'none';
     next.multiChoice.sides = ['broccoli'];
