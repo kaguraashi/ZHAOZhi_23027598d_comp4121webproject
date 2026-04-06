@@ -120,6 +120,13 @@ export default function CustomizationModal({ item, inventoryMap, onClose, onAdd,
   }
 
   const nutritionLine = `${liveNutrition.calories} kcal · ${liveNutrition.protein}g protein · ${liveNutrition.carbs}g carbs · ${liveNutrition.fat}g fat`;
+  const totalNutrition = {
+    calories: liveNutrition.calories * quantity,
+    protein: liveNutrition.protein * quantity,
+    carbs: liveNutrition.carbs * quantity,
+    fat: liveNutrition.fat * quantity,
+  };
+  const totalNutritionLine = `${totalNutrition.calories} kcal · ${totalNutrition.protein}g protein · ${totalNutrition.carbs}g carbs · ${totalNutrition.fat}g fat`;
 
   return (
     <div className="overlay" onClick={onClose}>
@@ -301,7 +308,7 @@ export default function CustomizationModal({ item, inventoryMap, onClose, onAdd,
             <div className="price-box">
               <span>Total</span>
               <strong>{formatCurrency(estimatedTotal)}</strong>
-              <small className="muted">{nutritionLine}</small>
+              <small className="muted">{quantity > 1 ? totalNutritionLine : nutritionLine}</small>
             </div>
           </section>
         </div>
