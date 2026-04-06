@@ -81,6 +81,12 @@ function OrderArticle({ order }) {
         <div><span>Coins earned</span><strong>{order.earned_coins}</strong></div>
       </div>
 
+      {order.notes && (
+        <div className="order-web-card__note muted">
+          <strong>Order note:</strong> {order.notes}
+        </div>
+      )}
+
       <div className="order-web-card__items">
         {(order.order_items || []).map((item) => {
           const lines = formatCustomization(item.customization);
@@ -109,12 +115,12 @@ function beautify(value) {
     dine_in: 'Dine in',
     out_for_delivery: 'Out for delivery',
   };
-  return map[value] || String(value || '').replace(/_/g, ' ').replace(/\w/g, (m) => m.toUpperCase());
+  return map[value] || String(value || '').replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase());
 }
 
 function formatOrderSlot(order) {
   if (order.scheduled_slot) return order.scheduled_slot;
-  if (order.order_type === 'pickup' || order.order_type === 'delivery') return 'ASAP (no slot chosen)';
+  if (order.order_type === 'pickup' || order.order_type === 'delivery') return 'ASAP / no slot chosen';
   if (order.order_type === 'dine_in') return 'Walk-in / no reservation';
   return 'Not selected';
 }

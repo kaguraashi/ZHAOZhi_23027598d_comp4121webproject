@@ -15,7 +15,7 @@ export function formatCustomization(customization) {
   }
 
   if (customization.notes) {
-    lines.push(`Notes: ${customization.notes}`);
+    lines.push(`Meal note: ${customization.notes}`);
   }
 
   return lines;

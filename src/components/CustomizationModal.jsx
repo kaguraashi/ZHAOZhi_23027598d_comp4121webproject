@@ -52,6 +52,12 @@ export default function CustomizationModal({ item, inventoryMap, onClose, onAdd,
     () => (item ? estimateCustomizationNutrition(item, customization) : emptyNutrition),
     [item, customization]
   );
+  const totalNutrition = useMemo(() => ({
+    calories: liveNutrition.calories * quantity,
+    protein: liveNutrition.protein * quantity,
+    carbs: liveNutrition.carbs * quantity,
+    fat: liveNutrition.fat * quantity,
+  }), [liveNutrition, quantity]);
   const isBuilder = item?.slug === 'build-your-own-bowl' || item?.id === 'build-your-own-bowl';
 
   if (!item) return null;
@@ -126,7 +132,7 @@ export default function CustomizationModal({ item, inventoryMap, onClose, onAdd,
             <div className="compact-row compact-row--top">
               <div>
                 <h4>Nutrition</h4>
-                <p className="muted small-text">Updates as you change the meal.</p>
+                <p className="muted small-text">Per bowl. Total only appears when quantity is more than 1.</p>
               </div>
             </div>
             <div className="nutrition-grid">
@@ -135,6 +141,11 @@ export default function CustomizationModal({ item, inventoryMap, onClose, onAdd,
               <div className="nutrition-tile"><strong>{liveNutrition.carbs}g</strong><span>carbs</span></div>
               <div className="nutrition-tile"><strong>{liveNutrition.fat}g</strong><span>fat</span></div>
             </div>
+            {quantity > 1 && (
+              <div className="nutrition-total-note muted small-text">
+                Total for {quantity} bowls: {totalNutrition.calories} kcal · {totalNutrition.protein}g protein · {totalNutrition.carbs}g carbs · {totalNutrition.fat}g fat
+              </div>
+            )}
           </section>
 
           {(schema.singleChoice || []).map((group) => (
@@ -181,8 +192,8 @@ export default function CustomizationModal({ item, inventoryMap, onClose, onAdd,
           ))}
 
           <section className="option-group">
-            <h4>Notes</h4>
-            <textarea className="textarea" rows="3" value={customization.notes} onChange={(event) => setCustomization((current) => ({ ...current, notes: event.target.value }))} placeholder="Less sauce, no onion..." />
+            <h4>Meal note</h4>
+            <textarea className="textarea" rows="3" value={customization.notes} onChange={(event) => setCustomization((current) => ({ ...current, notes: event.target.value }))} placeholder="This note stays with this meal only." />
           </section>
 
           {isBuilder && canSavePreset && (
@@ -223,6 +234,7 @@ export default function CustomizationModal({ item, inventoryMap, onClose, onAdd,
           <section className="option-group compact-row">
             <div>
               <h4>Quantity</h4>
+              <p className="muted small-text">Set how many bowls you want.</p>
               <div className="qty-picker">
                 <button type="button" onClick={() => setQuantity((current) => Math.max(1, current - 1))}>-</button>
                 <span>{quantity}</span>

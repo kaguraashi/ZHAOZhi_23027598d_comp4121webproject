@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { formatCurrency } from '../lib/pricing.js';
 import { useAuth } from '../context/AuthContext.jsx';
 import { formatCustomization } from '../lib/orderFormatting.js';
@@ -14,32 +14,6 @@ const defaultCheckout = {
   coinsRedeemed: 0,
 };
 
-const slotOptions = {
-  pickup: [
-    { value: '', label: 'ASAP / no fixed pickup time' },
-    { value: '11:30 - 12:00', label: '11:30 - 12:00' },
-    { value: '12:00 - 12:30', label: '12:00 - 12:30' },
-    { value: '12:30 - 13:00', label: '12:30 - 13:00' },
-    { value: '18:00 - 18:30', label: '18:00 - 18:30' },
-    { value: '18:30 - 19:00', label: '18:30 - 19:00' },
-    { value: '19:00 - 19:30', label: '19:00 - 19:30' },
-  ],
-  delivery: [
-    { value: '', label: 'ASAP / no fixed delivery slot' },
-    { value: '11:30 - 12:00', label: '11:30 - 12:00' },
-    { value: '12:00 - 12:30', label: '12:00 - 12:30' },
-    { value: '12:30 - 13:00', label: '12:30 - 13:00' },
-    { value: '18:00 - 18:30', label: '18:00 - 18:30' },
-    { value: '18:30 - 19:00', label: '18:30 - 19:00' },
-    { value: '19:00 - 19:30', label: '19:00 - 19:30' },
-  ],
-  dine_in: [
-    { value: '', label: 'Walk-in / no reserved table slot' },
-    { value: '12:00 - 12:30', label: 'Lunch walk-in 12:00 - 12:30' },
-    { value: '18:30 - 19:00', label: 'Dinner walk-in 18:30 - 19:00' },
-  ],
-};
-
 export default function CartPanel({ open, cartItems, user, onClose, onUpdateQty, onRemove, onCheckout }) {
   const { hasSupabaseEnv } = useAuth();
   const [checkoutForm, setCheckoutForm] = useState(defaultCheckout);
@@ -48,17 +22,6 @@ export default function CartPanel({ open, cartItems, user, onClose, onUpdateQty,
   const normalizedRedeem = Math.min(maxRedeemableCoins, checkoutForm.coinsRedeemed - (checkoutForm.coinsRedeemed % 100));
   const deliveryFee = checkoutForm.orderType === 'delivery' ? (checkoutForm.priorityDelivery ? 1200 : 600) : 0;
   const total = Math.max(0, subtotal + deliveryFee - normalizedRedeem);
-
-  useEffect(() => {
-    setCheckoutForm((current) => ({
-      ...current,
-      scheduledSlot: slotOptions[current.orderType].some((option) => option.value === current.scheduledSlot)
-        ? current.scheduledSlot
-        : '',
-      priorityDelivery: current.orderType === 'delivery' ? current.priorityDelivery : false,
-      deliveryAddress: current.orderType === 'delivery' ? current.deliveryAddress : '',
-    }));
-  }, [checkoutForm.orderType]);
 
   if (!open) return null;
 
@@ -80,7 +43,7 @@ export default function CartPanel({ open, cartItems, user, onClose, onUpdateQty,
         <div className="drawer__header">
           <div>
             <h2>Your cart</h2>
-            <p className="muted">Review items, choose pickup / dine in / delivery, then place your order.</p>
+            <p className="muted">Review items, pick a time slot, and place your order.</p>
           </div>
           <button className="ghost-btn" onClick={onClose}>Close</button>
         </div>
@@ -100,12 +63,12 @@ export default function CartPanel({ open, cartItems, user, onClose, onUpdateQty,
                 </div>
                 <div className="cart-row__actions">
                   <div className="qty-picker qty-picker--small">
-                    <button type="button" onClick={() => onUpdateQty(item.cartId, Math.max(1, item.quantity - 1))}>-</button>
+                    <button onClick={() => onUpdateQty(item.cartId, Math.max(1, item.quantity - 1))}>-</button>
                     <span>{item.quantity}</span>
-                    <button type="button" onClick={() => onUpdateQty(item.cartId, item.quantity + 1)}>+</button>
+                    <button onClick={() => onUpdateQty(item.cartId, item.quantity + 1)}>+</button>
                   </div>
                   <strong>{formatCurrency(item.lineTotal)}</strong>
-                  <button type="button" className="link-btn" onClick={() => onRemove(item.cartId)}>Remove</button>
+                  <button className="link-btn" onClick={() => onRemove(item.cartId)}>Remove</button>
                 </div>
               </div>
             );
@@ -148,24 +111,25 @@ export default function CartPanel({ open, cartItems, user, onClose, onUpdateQty,
                 </select>
               </label>
               <label>
-                Time preference
+                Time slot
                 <select
                   value={checkoutForm.scheduledSlot}
                   onChange={(event) => setCheckoutForm((current) => ({ ...current, scheduledSlot: event.target.value }))}
                 >
-                  {slotOptions[checkoutForm.orderType].map((option) => (
-                    <option key={option.label} value={option.value}>{option.label}</option>
-                  ))}
+                  {checkoutForm.orderType === 'dine_in' ? <option value="">Walk-in / no reservation</option> : <option value="">ASAP / no slot</option>}
+                  <option value="11:30 - 12:00">11:30 - 12:00</option>
+                  <option value="12:00 - 12:30">12:00 - 12:30</option>
+                  <option value="12:30 - 13:00">12:30 - 13:00</option>
+                  <option value="18:00 - 18:30">18:00 - 18:30</option>
+                  <option value="18:30 - 19:00">18:30 - 19:00</option>
+                  <option value="19:00 - 19:30">19:00 - 19:30</option>
                 </select>
-                <span className="muted small-text">
-                  Leave it on the first option if you want the restaurant to prepare it as soon as possible.
-                </span>
               </label>
             </div>
             {checkoutForm.orderType === 'delivery' && (
               <>
                 <label>
-                  Delivery address
+                  Delivery location
                   <input
                     value={checkoutForm.deliveryAddress}
                     onChange={(event) => setCheckoutForm((current) => ({ ...current, deliveryAddress: event.target.value }))}
@@ -195,12 +159,12 @@ export default function CartPanel({ open, cartItems, user, onClose, onUpdateQty,
               <span className="muted small-text">100 coins = HK$1.00. Available now: {user?.loyaltyCoins || 0}</span>
             </label>
             <label>
-              Notes
+              Order note
               <textarea
                 rows="3"
                 value={checkoutForm.notes}
                 onChange={(event) => setCheckoutForm((current) => ({ ...current, notes: event.target.value }))}
-                placeholder="Door code, no utensils, call on arrival..."
+                placeholder="Delivery or whole-order note. This is separate from each meal note."
               />
             </label>
 
