@@ -57,9 +57,10 @@ export default async function handler(req, res) {
 
       const subtotal = pricedItems.reduce((sum, item) => sum + item.lineTotal, 0);
       const coinsRedeemed = computeCoins(subtotal, body.coinsRedeemed, auth.profile?.loyalty_coins || 0);
-      const deliveryFee = body.orderType === 'delivery' ? (body.priorityDelivery ? 1200 : 600) : 0;
-      const total = Math.max(0, subtotal + deliveryFee - coinsRedeemed);
-      const earnedCoins = Math.floor(total / 100);
+      const deliveryFee = body.orderType === 'delivery' ? (body.priorityDelivery ? 12 : 6) : 0;
+      const redeemValue = coinsRedeemed / 100;
+      const total = Math.max(0, subtotal + deliveryFee - redeemValue);
+      const earnedCoins = Math.floor(total);
 
       const orderPayload = {
         user_id: auth.user.id,

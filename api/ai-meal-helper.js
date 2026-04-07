@@ -18,7 +18,7 @@ function buildMenuDigest(menuItems) {
   return (menuItems || []).slice(0, 18).map((item) => ({
     name: item.name,
     category: item.category,
-    price_hkd: Number(item.base_price || 0) / 100,
+    price_hkd: Number(item.base_price || 0),
     description: item.description,
   }));
 }

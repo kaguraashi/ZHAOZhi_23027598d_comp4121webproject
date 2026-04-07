@@ -1,7 +1,8 @@
 import { seasoningAddons, builderSchema, isBuilderItem } from './mealMeta.js';
 
-export function formatCurrency(cents) {
-  return `HK$${(Number(cents || 0) / 100).toFixed(2)}`;
+export function formatCurrency(amount) {
+  const value = Number(amount || 0);
+  return `HK$${Number.isInteger(value) ? value : value.toFixed(2)}`;
 }
 
 function getOptionPrice(options, selectedCode) {

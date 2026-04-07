@@ -18,10 +18,11 @@ export default function CartPanel({ open, cartItems, user, onClose, onUpdateQty,
   const { hasSupabaseEnv } = useAuth();
   const [checkoutForm, setCheckoutForm] = useState(defaultCheckout);
   const subtotal = useMemo(() => cartItems.reduce((sum, item) => sum + item.lineTotal, 0), [cartItems]);
-  const maxRedeemableCoins = Math.min(Math.floor(subtotal / 100) * 100, user?.loyaltyCoins || 0);
+  const maxRedeemableCoins = Math.min(Math.floor(subtotal) * 100, user?.loyaltyCoins || 0);
   const normalizedRedeem = Math.min(maxRedeemableCoins, checkoutForm.coinsRedeemed - (checkoutForm.coinsRedeemed % 100));
-  const deliveryFee = checkoutForm.orderType === 'delivery' ? (checkoutForm.priorityDelivery ? 1200 : 600) : 0;
-  const total = Math.max(0, subtotal + deliveryFee - normalizedRedeem);
+  const redeemValue = normalizedRedeem / 100;
+  const deliveryFee = checkoutForm.orderType === 'delivery' ? (checkoutForm.priorityDelivery ? 12 : 6) : 0;
+  const total = Math.max(0, subtotal + deliveryFee - redeemValue);
 
   if (!open) return null;
 
@@ -142,7 +143,7 @@ export default function CartPanel({ open, cartItems, user, onClose, onUpdateQty,
                     checked={checkoutForm.priorityDelivery}
                     onChange={(event) => setCheckoutForm((current) => ({ ...current, priorityDelivery: event.target.checked }))}
                   />
-                  Priority delivery +{formatCurrency(1200)}
+                  Priority delivery +{formatCurrency(12)}
                 </label>
               </>
             )}
@@ -171,7 +172,7 @@ export default function CartPanel({ open, cartItems, user, onClose, onUpdateQty,
             <div className="totals-box">
               <div><span>Subtotal</span><strong>{formatCurrency(subtotal)}</strong></div>
               <div><span>Delivery fee</span><strong>{formatCurrency(deliveryFee)}</strong></div>
-              <div><span>Coins redeemed</span><strong>- {formatCurrency(normalizedRedeem)}</strong></div>
+              <div><span>Coins redeemed</span><strong>- {formatCurrency(redeemValue)}</strong></div>
               <div className="totals-box__grand"><span>Total</span><strong>{formatCurrency(total)}</strong></div>
             </div>
 
