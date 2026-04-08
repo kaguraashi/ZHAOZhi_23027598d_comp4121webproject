@@ -193,7 +193,7 @@ export default function HomePage({ menuItems, inventoryFlags, onCustomize }) {
           <div>
             <p className="eyebrow">Community meals</p>
             <h2>Saved bowls</h2>
-            <p className="muted small-text">Search works here too. Open more only when you need them for demo.</p>
+            <p className="muted small-text">see what others prefer</p>
           </div>
           {filteredCommunityPresets.length > 3 && (
             <button
