@@ -4,8 +4,9 @@ create extension if not exists "pgcrypto";
 create table if not exists public.profiles (
   user_id uuid primary key references auth.users(id) on delete cascade,
   full_name text,
-  role text not null default 'customer' check (role in ('customer', 'admin')),
+  role text not null default 'customer' check (role in ('customer', 'admin', 'merchant')),
   loyalty_coins integer not null default 0,
+  merchant_id uuid,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -68,8 +69,9 @@ create table if not exists public.inventory_flags (
 create table if not exists public.orders (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  status text not null default 'received' check (status in ('received', 'cooking', 'ready', 'out_for_delivery', 'delivered', 'cancelled')),
+  status text not null default 'pending_receipt' check (status in ('pending_receipt', 'accepted', 'making', 'ready', 'out_for_delivery', 'delivered', 'completed', 'cancelled')),
   order_type text not null default 'pickup' check (order_type in ('pickup', 'dine_in', 'delivery')),
+  merchant_id uuid references public.merchants(id) on delete set null,
   scheduled_slot text,
   priority_delivery boolean not null default false,
   customer_name text not null,
@@ -89,6 +91,29 @@ create trigger orders_touch_updated_at
 before update on public.orders
 for each row execute procedure public.touch_updated_at();
 
+create table if not exists public.merchants (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null unique,
+  phone text,
+  address text,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.order_status_history (
+  id uuid primary key default gen_random_uuid(),
+  order_id uuid not null references public.orders(id) on delete cascade,
+  previous_status text,
+  new_status text not null,
+  changed_by uuid references auth.users(id) on delete set null,
+  changed_by_role text,
+  reason text,
+  metadata jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists public.order_items (
   id uuid primary key default gen_random_uuid(),
   order_id uuid not null references public.orders(id) on delete cascade,
@@ -99,6 +124,16 @@ create table if not exists public.order_items (
   line_total integer not null default 0,
   customization jsonb not null default '{}'::jsonb
 );
+
+drop trigger if exists merchants_touch_updated_at on public.merchants;
+create trigger merchants_touch_updated_at
+before update on public.merchants
+for each row execute procedure public.touch_updated_at();
+
+drop trigger if exists order_status_history_touch_created_at on public.order_status_history;
+create trigger order_status_history_touch_created_at
+before insert on public.order_status_history
+for each row execute procedure public.touch_updated_at();
 
 insert into public.menu_items
   (slug, name, name_chinese, category, base_price, image_url, description, cook_minutes, customization_schema)
@@ -200,6 +235,67 @@ for select using (
   exists (
     select 1 from public.orders o
     where o.id = order_items.order_id and o.user_id = auth.uid()
+  )
+);
+
+alter table public.merchants enable row level security;
+alter table public.order_status_history enable row level security;
+
+drop policy if exists "Merchants read for authenticated" on public.merchants;
+create policy "Merchants read for authenticated" on public.merchants
+for select using (auth.role() = 'authenticated');
+
+drop policy if exists "Merchants admin all" on public.merchants;
+create policy "Merchants admin all" on public.merchants
+for all using (
+  exists (
+    select 1 from public.profiles p
+    where p.user_id = auth.uid() and p.role = 'admin'
+  )
+);
+
+drop policy if exists "Merchants merchant read own" on public.merchants;
+create policy "Merchants merchant read own" on public.merchants
+for select using (
+  exists (
+    select 1 from public.profiles p
+    where p.user_id = auth.uid() and p.role = 'merchant' and p.merchant_id = merchants.id
+  )
+);
+
+drop policy if exists "Order status history read for merchant" on public.order_status_history;
+create policy "Order status history read for merchant" on public.order_status_history
+for select using (
+  exists (
+    select 1 from public.profiles p
+    where p.user_id = auth.uid() and p.role in ('admin', 'merchant')
+  )
+);
+
+drop policy if exists "Order status history insert for merchant" on public.order_status_history;
+create policy "Order status history insert for merchant" on public.order_status_history
+for insert with check (
+  exists (
+    select 1 from public.profiles p
+    where p.user_id = auth.uid() and p.role in ('admin', 'merchant')
+  )
+);
+
+drop policy if exists "Orders merchant read own" on public.orders;
+create policy "Orders merchant read own" on public.orders
+for select using (
+  exists (
+    select 1 from public.profiles p
+    where p.user_id = auth.uid() and p.role in ('admin', 'merchant')
+  )
+);
+
+drop policy if exists "Orders merchant update own" on public.orders;
+create policy "Orders merchant update own" on public.orders
+for update using (
+  exists (
+    select 1 from public.profiles p
+    where p.user_id = auth.uid() and p.role in ('admin', 'merchant')
   )
 );
 

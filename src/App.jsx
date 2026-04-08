@@ -10,6 +10,7 @@ import AdminPage from './pages/AdminPage.jsx';
 import ProfilePage from './pages/ProfilePage.jsx';
 import SettingsPage from './pages/SettingsPage.jsx';
 import MerchantLoginPage from './pages/MerchantLoginPage.jsx';
+import MerchantDashboard from './pages/MerchantDashboard.jsx';
 import { apiRequest } from './lib/api.js';
 import { useAuth } from './context/AuthContext.jsx';
 import { estimateLinePrice } from './lib/pricing.js';
@@ -223,6 +224,7 @@ export default function App() {
           <Route path="/" element={<HomePage menuItems={menuItems} inventoryFlags={inventoryFlags} onCustomize={handleOpenCustomize} />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/merchant-login" element={<MerchantLoginPage />} />
+          <Route path="/merchant" element={<MerchantDashboard />} />
           <Route path="/orders" element={<OrdersPage orders={orders} loading={loadingOrders} onRefresh={fetchOrders} />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/profile" element={<ProfilePage orders={orders} savedPresets={savedPresets} onUsePreset={(preset) => {
