@@ -22,6 +22,15 @@ function detectDefaultMealTime() {
   return 'all';
 }
 
+function summarizePresetForSearch(preset) {
+  const title = String(preset?.title || '');
+  const goal = String(preset?.goal_tag || '');
+  const customization = preset?.customization || {};
+  const single = Object.values(customization.singleChoice || {}).join(' ');
+  const multi = Object.values(customization.multiChoice || {}).flat().join(' ');
+  return `${title} ${goal} ${single} ${multi}`.toLowerCase();
+}
+
 export default function HomePage({ menuItems, inventoryFlags, onCustomize }) {
   const [category, setCategory] = useState('All');
   const [search, setSearch] = useState('');
@@ -30,6 +39,7 @@ export default function HomePage({ menuItems, inventoryFlags, onCustomize }) {
   const [communityPresets, setCommunityPresets] = useState([]);
   const [goal, setGoal] = useState('All goals');
   const [kitchen, setKitchen] = useState('All kitchens');
+  const [communityExpanded, setCommunityExpanded] = useState(false);
 
   const categories = useMemo(() => ['All', ...new Set(menuItems.map((item) => item.category).filter(Boolean))], [menuItems]);
   const builderItem = useMemo(() => menuItems.find((item) => item.slug === 'build-your-own-bowl' || item.id === 'build-your-own-bowl'), [menuItems]);
@@ -57,6 +67,20 @@ export default function HomePage({ menuItems, inventoryFlags, onCustomize }) {
     return matchCategory && matchSearch && matchesMealTime(item, mealTime) && matchesGoal(item, goal) && matchesKitchen(item, kitchen);
   }), [menuItems, builderItem, category, search, mealTime, goal, kitchen]);
 
+  const filteredCommunityPresets = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    const base = communityPresets.filter((preset) => {
+      if (!query) return true;
+      return summarizePresetForSearch(preset).includes(query);
+    });
+    return base;
+  }, [communityPresets, search]);
+
+  const visibleCommunityPresets = useMemo(() => {
+    if (communityExpanded) return filteredCommunityPresets;
+    return filteredCommunityPresets.slice(0, 3);
+  }, [filteredCommunityPresets, communityExpanded]);
+
   const unavailableCount = (inventoryFlags || []).filter((flag) => flag.is_available === false).length;
 
   return (
@@ -74,7 +98,7 @@ export default function HomePage({ menuItems, inventoryFlags, onCustomize }) {
           <p className="muted hero-panel__copy">Pick a regular dish or build your own bowl.</p>
 
           <div className="hero-search-row hero-search-row--triple">
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search dishes or kitchens" />
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search dishes, kitchens, or saved bowls" />
             <select value={category} onChange={(event) => setCategory(event.target.value)}>
               {categories.map((entry) => <option key={entry} value={entry}>{entry}</option>)}
             </select>
@@ -116,6 +140,7 @@ export default function HomePage({ menuItems, inventoryFlags, onCustomize }) {
 
           <div className="hero-summary-row">
             <div className="hero-summary-pill"><strong>{filtered.length}</strong><span>matching dishes</span></div>
+            {filteredCommunityPresets.length > 0 && <div className="hero-summary-pill"><strong>{filteredCommunityPresets.length}</strong><span>saved bowls</span></div>}
             {unavailableCount > 0 && <div className="hero-summary-pill"><strong>{unavailableCount}</strong><span>unavailable options</span></div>}
           </div>
         </article>
@@ -147,24 +172,6 @@ export default function HomePage({ menuItems, inventoryFlags, onCustomize }) {
         </section>
       )}
 
-      <section className="community-section-web">
-        <div className="section-heading section-heading--tight">
-          <div>
-            <p className="eyebrow">Community meals</p>
-            <h2>Saved bowls</h2>
-          </div>
-        </div>
-        {communityPresets.length ? (
-          <div className="community-grid-web">
-            {communityPresets.map((preset) => (
-              <CommunityPresetCard key={preset.id} preset={preset} onUse={(chosenPreset) => builderItem && onCustomize(builderItem, chosenPreset.customization)} />
-            ))}
-          </div>
-        ) : (
-          <div className="card empty-box">No saved bowls yet.</div>
-        )}
-      </section>
-
       <section className="menu-section-web">
         <div className="section-heading section-heading--tight">
           <div>
@@ -177,6 +184,34 @@ export default function HomePage({ menuItems, inventoryFlags, onCustomize }) {
         ) : (
           <div className="menu-grid-desktop">
             {filtered.map((item) => <MenuCard key={item.id || item.slug} item={item} onCustomize={onCustomize} />)}
+          </div>
+        )}
+      </section>
+
+      <section className="community-section-web community-section-web--bottom">
+        <div className="section-heading section-heading--tight community-section-web__header">
+          <div>
+            <p className="eyebrow">Community meals</p>
+            <h2>Saved bowls</h2>
+            <p className="muted small-text">Search works here too. Open more only when you need them for demo.</p>
+          </div>
+          {filteredCommunityPresets.length > 3 && (
+            <button
+              type="button"
+              className="ghost-btn"
+              onClick={() => setCommunityExpanded((current) => !current)}
+            >
+              {communityExpanded ? 'Show less' : `Show all (${filteredCommunityPresets.length})`}
+            </button>
+          )}
+        </div>
+        {!filteredCommunityPresets.length ? (
+          <div className="card empty-box">No saved bowls match the current search.</div>
+        ) : (
+          <div className="community-grid-web">
+            {visibleCommunityPresets.map((preset) => (
+              <CommunityPresetCard key={preset.id} preset={preset} onUse={(chosenPreset) => builderItem && onCustomize(builderItem, chosenPreset.customization)} />
+            ))}
           </div>
         )}
       </section>
