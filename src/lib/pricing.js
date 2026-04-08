@@ -46,11 +46,15 @@ export function estimateLinePrice(item, customization) {
 export function orderStatusLabel(status) {
   return (
     {
+      pending_receipt: 'Pending',
+      accepted: 'Accepted',
+      making: 'Making',
       received: 'Received',
       cooking: 'Cooking',
       ready: 'Ready',
-      out_for_delivery: 'Out for delivery',
+      out_for_delivery: 'Out for Delivery',
       delivered: 'Delivered',
+      completed: 'Completed',
       cancelled: 'Cancelled',
     }[status] || status
   );
