@@ -3,7 +3,7 @@ import { apiRequest } from '../lib/api.js';
 
 const samplePrompt = 'High protein lunch under HK$90. No mushroom.';
 
-export default function AiMealHelper({ open, onClose }) {
+export default function AiMealHelper({ open, onClose, onUseRecommended }) {
   const [input, setInput] = useState(samplePrompt);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -42,6 +42,12 @@ export default function AiMealHelper({ open, onClose }) {
     }
   }
 
+  function handleUseRecommended() {
+    if (!result || result.recommendationType !== 'community_preset' || !result.presetCustomization) return;
+    onUseRecommended?.(result);
+    onClose?.();
+  }
+
   return (
     <div className="overlay" onClick={onClose}>
       <div className="modal modal--medium" onClick={(event) => event.stopPropagation()}>
@@ -73,11 +79,21 @@ export default function AiMealHelper({ open, onClose }) {
 
           {result && (
             <div className="card card--nested ai-result-box">
-              <h3>{result.recommendedDish || 'Suggested dish'}</h3>
+              <div className="compact-row compact-row--top">
+                <h3>{result.recommendedDish || 'Suggested dish'}</h3>
+                <span className="status-badge status-badge--ready">
+                  {result.recommendationType === 'community_preset' ? 'Community saved bowl' : 'Regular menu'}
+                </span>
+              </div>
               <p><strong>Summary:</strong> {result.summary || 'No summary returned.'}</p>
               {result.reason && <p><strong>Why:</strong> {result.reason}</p>}
               {result.kitchenNote && <p><strong>Note:</strong> {result.kitchenNote}</p>}
               {result.budgetTip && <p><strong>Budget:</strong> {result.budgetTip}</p>}
+              {result.recommendationType === 'community_preset' && (
+                <div className="builder-feature-actions">
+                  <button type="button" className="primary-btn" onClick={handleUseRecommended}>Use this saved bowl</button>
+                </div>
+              )}
             </div>
           )}
         </div>

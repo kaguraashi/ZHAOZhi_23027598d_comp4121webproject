@@ -216,7 +216,15 @@ export default function HomePage({ menuItems, inventoryFlags, onCustomize }) {
         )}
       </section>
 
-      <AiMealHelper open={aiOpen} onClose={() => setAiOpen(false)} />
+      <AiMealHelper
+        open={aiOpen}
+        onClose={() => setAiOpen(false)}
+        onUseRecommended={(recommendation) => {
+          if (recommendation?.recommendationType === 'community_preset' && builderItem && recommendation.presetCustomization) {
+            onCustomize(builderItem, recommendation.presetCustomization);
+          }
+        }}
+      />
     </div>
   );
 }
